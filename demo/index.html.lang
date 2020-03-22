@@ -1,0 +1,11 @@
+{
+    "en":{
+        "greet-text":"Hello!"
+    },
+    "sp":{
+        "greet-text":"Hola!"
+    },
+    "jp":{
+        "greet-text":"Konichiva!"
+    }
+}

@@ -7,7 +7,7 @@ function pagePress(req, res, next) {
 
     res.render = function (templateFilename, valueBindingsJSON, langCode) {
 
-        if (langCode == undefined) { langCode = '' }
+        if (langCode == undefined) { langCode = 'default' }
 
         return new Promise((resolve, reject) => {
 

@@ -44,14 +44,14 @@ Prepare the backend `index.js` file:
 
 In `res.render()`  we first specify the template file, and then a JSON object with the values we wish to bind to placeholders in `index.html`.
 
-Now visit http://localhost from your web browser.
+Do `npm index.js` and visit http://localhost from your web browser.
 
 ## Adding multi-language support
 
 Prepare your language file `index.html.lang` next to `index.html`:
 
     {
-        "en":{
+        "default":{
             "greet-text":"Hello!"
         },
         "sp":{
@@ -70,4 +70,4 @@ Pass your prefered language into the `res.render()`:
         'sp'            // language
     )
 
-PagePress will read the .lang file and fill the placeholder with the specified spanish value.
+PagePress will read the .lang file and fill the placeholder with the specified spanish value. If you do not specify the language in `res.render()`. Not specifying a language in `res.ender()` will make PagePress use `default` fields in the language file to fill html placeholders.

@@ -36,7 +36,7 @@ function pagePress(req, res, next) {
 
                             for (key in languageBindingsJSON) {
                                 templateSrc = templateSrc.replace(
-                                    new RegExp('{' + key + '}', 'g'),
+                                    new RegExp(key, 'g'),
                                     languageBindingsJSON[key]
                                 )
                             }
@@ -52,7 +52,7 @@ function pagePress(req, res, next) {
                 // plug json values to template placeholders
                 for (key in valueBindingsJSON) {
                     templateSrc = templateSrc.replace(
-                        new RegExp('{' + key + '}', 'g'),
+                        new RegExp(key, 'g'),
                         valueBindingsJSON[key]
                     )
                 }

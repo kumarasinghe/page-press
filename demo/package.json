@@ -7,6 +7,6 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "page-press": "^1.0.2"
+    "page-press": "^1.0.3"
   }
 }

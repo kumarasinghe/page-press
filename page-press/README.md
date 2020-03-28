@@ -16,11 +16,11 @@ Prepare the frontend `index.html` page:
 
     <html>
         <body>
-        <h1>{greet-text}</h1>
+        <h1>greet-text</h1>
         </body>
     </html>
 
-`{greet-text}` is a placeholder. It will be replaced by a value when the browser sees it.
+`greet-text` is a placeholder. It will be replaced by a value when the browser sees it.
 
 Prepare the backend `index.js` file:
 
@@ -52,7 +52,8 @@ Prepare your language file `index.html.lang` next to `index.html`:
 
     {
         "default":{
-            "greet-text":"Hello!"
+            "greet-text":"Hello!",
+            "original text":"replacement text"
         },
         "sp":{
             "greet-text":"Hola!"

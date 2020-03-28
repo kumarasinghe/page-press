@@ -2,67 +2,86 @@ const fs = require('fs')
 const path = require('path')
 let cache = {}
 
+/********************************** UTILITIES *********************************/
+
+function cachedReadFileSync(filename) {
+
+    // if file is in cache
+    if (cache[filename]) {
+        return cache[filename] + ''
+    }
+    // if file is not in cache => read from disk
+    else {
+
+        let fileContent = fs.readFileSync(filename)
+        // add file to cache
+        cache[filename] = fileContent
+        return fileContent + ''
+
+    }
+
+}
+
 /***************************** EXPRESS MIDDLEWARE *****************************/
+
 function pagePress(req, res, next) {
 
-    res.render = function (templateFilename, valueBindingsJSON, langCode) {
+    res.render = function (templateFilename, templateValues, langCode) {
 
-        if (langCode == undefined) { langCode = 'default' }
+        return new Promise((resolve) => {
 
-        return new Promise((resolve, reject) => {
-
+            // read template file content
+            let templateCode
             try {
+                templateCode = cachedReadFileSync(templateFilename)
+            } catch (err) {
+                throw new Error('Unable to read template: ' + templateFilename)
+            }
 
-                let templateSrc
+            // bind values to template
+            for (key in templateValues) {
 
-                // try getting the template source copy from cache
-                if (cache[templateFilename + langCode]) {
-                    templateSrc = cache[templateFilename + langCode] + ''
+                let value = templateValues[key]
+
+                templateCode = templateCode.replace(
+                    new RegExp(key, 'g'),
+                    value
+                )
+
+            }
+
+            // localize
+            if (fs.existsSync(templateFilename + '.lang')) {
+
+                // read language file content
+                if (langCode == undefined) { langCode = 'default' }
+                let languageBinding
+
+                try {
+                    languageBinding = JSON.parse(cachedReadFileSync(templateFilename + '.lang'))[langCode]
+                } catch (err) {
+                    throw new Error('Error parsing the language file: ' + templateFilename + '.lang')
                 }
-                // template not cached. read from the disk.
-                else {
-                    // read template from disk
-                    templateSrc = fs.readFileSync(templateFilename, { encoding: 'utf8' })
 
-                    // if language file available
-                    let languageFilename = templateFilename + '.lang'
-                    if (fs.existsSync(languageFilename)) {
+                // if binding exists for the requested language
+                if (languageBinding) {
 
-                        // plug language bindings to template
-                        let languageBindingsJSON = JSON.parse(fs.readFileSync(languageFilename))[langCode]
+                    // bind new language to template code
+                    for (key in languageBinding) {
 
-                        // if language available
-                        if (languageBindingsJSON) {
+                        let value = languageBinding[key]
 
-                            for (key in languageBindingsJSON) {
-                                templateSrc = templateSrc.replace(
-                                    new RegExp(key, 'g'),
-                                    languageBindingsJSON[key]
-                                )
-                            }
-
-                        }
+                        templateCode = templateCode.replace(
+                            new RegExp(key, 'g'),
+                            value
+                        )
 
                     }
-
-                    // cache the template for future use
-                    cache[templateFilename + langCode] = templateSrc + ''
                 }
-
-                // plug json values to template placeholders
-                for (key in valueBindingsJSON) {
-                    templateSrc = templateSrc.replace(
-                        new RegExp(key, 'g'),
-                        valueBindingsJSON[key]
-                    )
-                }
-
-                res.end(templateSrc)
-                resolve()
-
-            } catch (err) {
-                reject(err)
             }
+
+            res.end(templateCode)
+            resolve()
 
         })
 
